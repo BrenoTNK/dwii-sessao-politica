@@ -28,14 +28,13 @@ app.use(bodyparser.urlencoded({ extended: true }))
 // Banco de dados
 const db = mysql.createPool({
     host: process.env.HOST,
-    port: Number(process.env.DB_PORT),
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE
 });
 
 // CRUD
-app.post("/cadastro", (req, res) => {
+app.post("/cadastro", async (req, res) => {
     const user = req.body.user;
     const login = req.body.email;
     const password = req.body.password;
@@ -46,7 +45,7 @@ app.post("/cadastro", (req, res) => {
     res.send(db.query(query, [user, login, password]));
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
     const login = req.body.email;
     const password = md5(req.body.password);
 
@@ -60,7 +59,7 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.post("/propostas", (req, res) => {
+app.post("/propostas", async (req, res) => {
     const fkPolitico = req.body.idUser;
 
     const query = `SELECT * FROM sessao
@@ -69,9 +68,7 @@ app.post("/propostas", (req, res) => {
     res.send(db.query(query, [fkPolitico]));
 });
 
-///////////////////////////////////////////////////////////////////////
-
-app.post("/listaVotos", (req, res) => {
+app.post("/listaVotos", async (req, res) => {
     const fkSessao = req.body.fkSessao;
 
     const query = `SELECT * FROM voto
@@ -82,7 +79,7 @@ app.post("/listaVotos", (req, res) => {
     res.send(votos);
 });
 
-app.post("/votar", (req, res) => {
+app.post("/votar", async (req, res) => {
     const voto = req.body.voto;
     const sessao = req.body.sessao;
     const politico  = req.body.politico;
@@ -93,7 +90,7 @@ app.post("/votar", (req, res) => {
     res.send(db.query(query, [voto, sessao, politico]));
 });
 
-app.post("/novaSessao", (req, res) => {
+app.post("/novaSessao", async (req, res) => {
     const nome = req.body.nome;
     const descricao = req.body.descricao;
     const tipo = req.body.tipo;
@@ -113,7 +110,7 @@ app.post("/novaSessao", (req, res) => {
     res.send(db.query(query, [nome, descricao, tipo, opcao1, opcao2, dataInicial, dataFinal, qtdMax, qtdVotosPos, qtdVotosNeg, estado, fkPolitico]));
 });
 
-app.post("/deletarSessao", (req, res) => {
+app.post("/deletarSessao", async (req, res) => {
     const idSessao = req.body.sessao;
     const fkPolitico = req.body.politico;
 
